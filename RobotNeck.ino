@@ -8,9 +8,10 @@ const int rightNeutral = 1390;   // Calibrated neutral position for the right se
 const int leftNeutral = 1440;    // Calibrated neutral position for the left servo
 const int bottomNeutral = 1550;  // Calibrated neutral position for the bottom servo
 
-const int stepUs = 10;          // Movement step in microseconds
-const int maxTiltOffsetUs = 30; // Maximum test offset for each upper direction
-const int maxYawOffsetUs = 30;  // Maximum test offset for the bottom servo
+const int stepUs = 35;           // Offset added per keypress
+const int maxTiltOffsetUs = 100;  // Maximum pitch or roll command offset
+const int maxYawOffsetUs = 100;   // Maximum yaw command offset
+const int maxUpperOffsetUs = 100; // Maximum offset for each upper servo
 
 int pitchOffsetUs = 0;
 int rollOffsetUs = 0;
@@ -26,7 +27,7 @@ void setup() {
   // Move all servos to their calibrated neutral positions
   updateServos();
 
-  Serial.println("Pitch: W/S, Roll: A/D, Yaw: J/L, Neutral: 0");
+  Serial.println("Pitch: A/D, Roll: W/S, Yaw: J/L, Neutral: 0");
 }
 
 void loop() {
@@ -62,10 +63,15 @@ void loop() {
 }
 
 void updateServos() {
-  // Combine pitch and roll offsets for the two upper servos
-  neckServo9.writeMicroseconds(rightNeutral + pitchOffsetUs + rollOffsetUs);
-  neckServo10.writeMicroseconds(leftNeutral + pitchOffsetUs - rollOffsetUs);
+  // Limit each upper servo after combining pitch and roll.
+  const int rightOffsetUs = constrain(
+      pitchOffsetUs + rollOffsetUs, -maxUpperOffsetUs, maxUpperOffsetUs);
+  const int leftOffsetUs = constrain(
+      pitchOffsetUs - rollOffsetUs, -maxUpperOffsetUs, maxUpperOffsetUs);
 
-  // Apply yaw offset to the bottom servo
+  neckServo9.writeMicroseconds(rightNeutral + rightOffsetUs);
+  neckServo10.writeMicroseconds(leftNeutral + leftOffsetUs);
+
+  // Apply yaw independently to the bottom servo.
   neckServo11.writeMicroseconds(bottomNeutral + yawOffsetUs);
 }

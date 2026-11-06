@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 Servo neckServo9;   // Top-right servo
-Servo neckServo10;  // Top-left servo
+Servo neckServo10;  // Top-left servoa
 Servo neckServo11;  // Bottom servo
 
 const int rightNeutral = 1390;   // Calibrated neutral position for the right servo
@@ -34,14 +34,15 @@ void loop() {
     char command = Serial.read();
 
     // Control pitch: move both upper servos in the same direction
-    if (command == 'w') pitchOffsetUs += stepUs;
-    if (command == 's') pitchOffsetUs -= stepUs;
+    if (command == 'a') pitchOffsetUs += stepUs;
+    if (command == 'd') pitchOffsetUs -= stepUs;
 
     // Control roll: move the upper servos in opposite directions
-    if (command == 'd') rollOffsetUs += stepUs;
-    if (command == 'a') rollOffsetUs -= stepUs;
+    if (command == 'w') rollOffsetUs += stepUs;
+    if (command == 's') rollOffsetUs -= stepUs;
 
-    // Control yaw: move the bottom servo
+    // Control yaw: move the bottom servow
+    
     if (command == 'l') yawOffsetUs += stepUs;
     if (command == 'j') yawOffsetUs -= stepUs;
 
